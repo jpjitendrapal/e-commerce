@@ -42,7 +42,7 @@ export const ProfileScreen = () => {
   };
 
   return (
-    <MainLayout showSearch={false}>
+    <MainLayout showSearch={false} showCategories={false}>
       <KeyboardAvoidingView 
         style={styles.keyboardAvoiding} 
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}

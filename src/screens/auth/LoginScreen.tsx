@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   ActivityIndicator, KeyboardAvoidingView, ScrollView, Platform
@@ -8,6 +8,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { RootNavigationProp } from '../../navigation/types';
 import { authService } from '../../services/auth';
 import { useToastStore } from '../../store/useToastStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { validateIndianMobile } from '../../utils/validation';
 
 export const LoginScreen = () => {
@@ -19,6 +20,13 @@ export const LoginScreen = () => {
   const redirectTo = route.params?.redirectTo;
 
   const { showToast } = useToastStore();
+  const { isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigation.navigate('Home');
+    }
+  }, [isAuthenticated, navigation]);
 
   const handleLogin = async () => {
     setError('');

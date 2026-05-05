@@ -74,7 +74,7 @@ export const OrdersScreen = () => {
   };
 
   return (
-    <MainLayout showSearch={false}>
+    <MainLayout showSearch={false} showCategories={false}>
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
