@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, StyleSheet, Text, TouchableOpacity, Pressable } from 'react-native';
+import { View, Image, StyleSheet, Text, TouchableOpacity, Pressable, Modal, TouchableWithoutFeedback } from 'react-native';
 import Logo from '../../assets/favicon.png';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,11 +14,12 @@ type HeaderProps = {
 };
 
 export const Header = ({ centerComponent }: HeaderProps) => {
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, logout, user } = useAuthStore();
   const { getTotalItems } = useCartStore();
   const navigation = useNavigation<RootNavigationProp>();
   const deviceWidth = useDeviceWidth();
   const cartItemCount = getTotalItems();
+  const [isMenuVisible, setIsMenuVisible] = React.useState(false);
 
   const isMobile = deviceWidth === 'sm';
   const isSmallMobile = deviceWidth === 'sm';
@@ -50,12 +51,57 @@ export const Header = ({ centerComponent }: HeaderProps) => {
       <View style={[styles.right, isMobile && styles.rightMobile]}>
         <View style={styles.userSection}>
           <TouchableOpacity 
-            onPress={() => isAuthenticated ? logout() : navigation.navigate('Login')} 
+            onPress={() => {
+              if (isAuthenticated) {
+                setIsMenuVisible(!isMenuVisible);
+              } else {
+                navigation.navigate('Login');
+              }
+            }} 
             style={styles.iconButton}
           >
             <Ionicons name="person-outline" size={22} color="#0f172a" />
-            {!isMobile && <Text style={styles.userName}>{isAuthenticated ? 'Logout' : 'Account'}</Text>}
+            {!isMobile && <Text style={styles.userName}>Account</Text>}
           </TouchableOpacity>
+
+          {isMenuVisible && isAuthenticated && (
+            <Modal
+              transparent={true}
+              visible={isMenuVisible}
+              onRequestClose={() => setIsMenuVisible(false)}
+            >
+              <TouchableWithoutFeedback onPress={() => setIsMenuVisible(false)}>
+                <View style={styles.modalOverlay}>
+                  <View style={[styles.dropdown, isMobile && styles.dropdownMobile]}>
+                    <Text style={styles.menuHeader}>Hi, {user?.name || 'User'}</Text>
+                    <View style={styles.divider} />
+                    
+                    <TouchableOpacity 
+                      style={styles.menuItem}
+                      onPress={() => {
+                        setIsMenuVisible(false);
+                        navigation.navigate('Profile');
+                      }}
+                    >
+                      <Ionicons name="person-circle-outline" size={20} color="#475569" />
+                      <Text style={styles.menuText}>My Profile</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                      style={styles.menuItem}
+                      onPress={() => {
+                        setIsMenuVisible(false);
+                        logout();
+                      }}
+                    >
+                      <Ionicons name="log-out-outline" size={20} color="#ef4444" />
+                      <Text style={[styles.menuText, { color: '#ef4444' }]}>Logout</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
+            </Modal>
+          )}
 
           <TouchableOpacity 
             onPress={() => navigation.navigate('Cart')} 
@@ -177,5 +223,54 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 9,
     fontWeight: '800',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+  dropdown: {
+    position: 'absolute',
+    top: 70,
+    right: 60,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 8,
+    minWidth: 200,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 10,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  dropdownMobile: {
+    right: 20,
+    top: 60,
+  },
+  menuHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0f172a',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#f1f5f9',
+    marginVertical: 4,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+    borderRadius: 8,
+  },
+  menuText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#475569',
   },
 });
