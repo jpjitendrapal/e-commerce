@@ -17,18 +17,18 @@ interface MainLayoutProps {
   showCategories?: boolean;
 }
 
-export const MainLayout = ({ 
-  children, 
+export const MainLayout = ({
+  children,
   showSearch = true,
   showCategories = true
 }: MainLayoutProps) => {
   const deviceWidth = useDeviceWidth();
   const navigation = useNavigation<RootNavigationProp>();
   const route = useRoute();
-  
-  const { 
-    categories, selectedCategory, searchQuery, 
-    setSelectedCategory, setSearchQuery, fetchCategories 
+
+  const {
+    categories, selectedCategory, searchQuery,
+    setSelectedCategory, setSearchQuery, fetchCategories
   } = useCategoryStore();
 
   const isLargeScreen = deviceWidth === "lg" || deviceWidth === "xl";
@@ -40,7 +40,7 @@ export const MainLayout = ({
 
   const handleCategorySelect = (cat: any) => {
     const slug = typeof cat === 'string' ? cat : cat.slug;
-    
+
     if (slug === 'All') {
       setSelectedCategory(null);
     } else {
@@ -97,18 +97,18 @@ export const MainLayout = ({
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
         <Header centerComponent={showSearch ? SearchBar : undefined} />
-        
+
         <View style={[
-          styles.mainLayout, 
+          styles.mainLayout,
           !isLargeScreen && styles.mainLayoutMobile,
           !showCategories && styles.mainLayoutNoCategories
         ]}>
-          
+
           {/* Categories Sidebar/Top Bar */}
           {showCategories && (
             isLargeScreen ? (
@@ -251,5 +251,6 @@ const styles = StyleSheet.create({
     color: '#0f172a',
     borderWidth: 0,
     padding: 4,
+    outlineColor: '#f8fafc'
   },
 });
