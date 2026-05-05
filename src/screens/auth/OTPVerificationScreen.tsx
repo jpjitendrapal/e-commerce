@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, 
+  View, Text, TextInput, TouchableOpacity, StyleSheet, 
   ActivityIndicator, KeyboardAvoidingView, ScrollView, Platform 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { RootStackParamList, RootNavigationProp } from '../../navigation/types';
 import { authService } from '../../services/auth';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useToastStore } from '../../store/useToastStore';
 
 type OTPVerificationRouteProp = RouteProp<RootStackParamList, 'OTPVerification'>;
 
@@ -17,12 +18,15 @@ export const OTPVerificationScreen = () => {
   const { mobile, name, isSignUp } = route.params;
   
   const [otp, setOtp] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const login = useAuthStore(state => state.login);
+  const { showToast } = useToastStore();
 
   const handleVerify = async () => {
+    setError('');
     if (otp.length < 4) {
-      Alert.alert('Error', 'Please enter a valid OTP');
+      setError('Please enter a valid OTP');
       return;
     }
     
@@ -30,14 +34,14 @@ export const OTPVerificationScreen = () => {
     try {
       const isValid = await authService.verifyOTP(mobile, otp);
       if (isValid) {
-        // Log the user in
+        showToast('Login successful!', 'success');
         login({ mobile, name: isSignUp ? name : 'User' });
         navigation.navigate('Home');
       } else {
-        Alert.alert('Error', 'Invalid OTP');
+        setError('Invalid OTP. Please try again.');
       }
     } catch (e) {
-      Alert.alert('Error', 'Failed to verify OTP');
+      showToast('Verification failed. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -56,13 +60,17 @@ export const OTPVerificationScreen = () => {
             <Text style={styles.hint}>Hint: Use 1234 for testing</Text>
 
             <TextInput
-              style={styles.input}
+              style={[styles.input, error ? styles.inputError : null]}
               placeholder="Enter OTP"
               keyboardType="number-pad"
               value={otp}
-              onChangeText={setOtp}
+              onChangeText={(text) => {
+                setOtp(text);
+                if (error) setError('');
+              }}
               maxLength={6}
             />
+            {!!error && <Text style={styles.errorText}>{error}</Text>}
 
             <TouchableOpacity style={styles.button} onPress={handleVerify} disabled={loading}>
               {loading ? (
@@ -107,10 +115,21 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     color: '#1e293b',
-    marginBottom: 32,
+    marginBottom: 12,
     backgroundColor: '#f8fafc',
     textAlign: 'center',
     letterSpacing: 12,
+  },
+  inputError: {
+    borderColor: '#ef4444',
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 14,
+    marginTop: -8,
+    marginBottom: 24,
+    textAlign: 'center',
+    fontWeight: '600',
   },
   button: {
     backgroundColor: '#6366f1',

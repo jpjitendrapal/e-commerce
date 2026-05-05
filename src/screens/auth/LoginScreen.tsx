@@ -1,29 +1,36 @@
 import React, { useState } from 'react';
 import { 
-  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, 
+  View, Text, TextInput, TouchableOpacity, StyleSheet, 
   ActivityIndicator, KeyboardAvoidingView, ScrollView, Platform 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { RootNavigationProp } from '../../navigation/types';
 import { authService } from '../../services/auth';
+import { useToastStore } from '../../store/useToastStore';
+import { validateIndianMobile } from '../../utils/validation';
 
 export const LoginScreen = () => {
   const [mobile, setMobile] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<RootNavigationProp>();
 
+  const { showToast } = useToastStore();
+
   const handleLogin = async () => {
-    if (mobile.length < 10) {
-      Alert.alert('Error', 'Please enter a valid mobile number');
+    setError('');
+    if (!validateIndianMobile(mobile)) {
+      setError('Please enter a valid 10-digit Indian mobile number');
       return;
     }
     setLoading(true);
     try {
       await authService.sendOTP(mobile);
+      showToast('OTP sent successfully!', 'success');
       navigation.navigate('OTPVerification', { mobile, isSignUp: false });
     } catch (e) {
-      Alert.alert('Error', 'Failed to send OTP');
+      showToast('Failed to send OTP. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -41,13 +48,17 @@ export const LoginScreen = () => {
             <Text style={styles.subtitle}>Enter your mobile number to login</Text>
 
             <TextInput
-              style={styles.input}
+              style={[styles.input, error ? styles.inputError : null]}
               placeholder="Mobile Number"
               keyboardType="phone-pad"
               value={mobile}
-              onChangeText={setMobile}
-              maxLength={15}
+              onChangeText={(text) => {
+                setMobile(text);
+                if (error) setError('');
+              }}
+              maxLength={10}
             />
+            {!!error && <Text style={styles.errorText}>{error}</Text>}
 
             <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
               {loading ? (
@@ -97,8 +108,19 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: '#1e293b',
-    marginBottom: 20,
+    marginBottom: 12,
     backgroundColor: '#f8fafc',
+  },
+  inputError: {
+    borderColor: '#ef4444',
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 12,
+    marginTop: -8,
+    marginBottom: 12,
+    marginLeft: 4,
+    fontWeight: '600',
   },
   button: {
     backgroundColor: '#6366f1',
