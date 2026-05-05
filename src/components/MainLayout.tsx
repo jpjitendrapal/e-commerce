@@ -1,0 +1,223 @@
+import React, { useEffect, ReactNode } from 'react';
+import {
+  View, Text, StyleSheet, ScrollView, TouchableOpacity,
+  TextInput, KeyboardAvoidingView, Platform
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { Header } from './Header';
+import { useCategoryStore } from '../store/useCategoryStore';
+import useDeviceWidth from '../utils/useDeviceWidth';
+import { RootNavigationProp } from '../navigation/types';
+
+interface MainLayoutProps {
+  children: ReactNode;
+  showSearch?: boolean;
+}
+
+export const MainLayout = ({ children, showSearch = true }: MainLayoutProps) => {
+  const deviceWidth = useDeviceWidth();
+  const navigation = useNavigation<RootNavigationProp>();
+  const route = useRoute();
+  
+  const { 
+    categories, selectedCategory, searchQuery, 
+    setSelectedCategory, setSearchQuery, fetchCategories 
+  } = useCategoryStore();
+
+  const isLargeScreen = deviceWidth === "lg" || deviceWidth === "xl";
+  const isMobile = deviceWidth === 'sm';
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const handleCategorySelect = (cat: any) => {
+    const slug = typeof cat === 'string' ? cat : cat.slug;
+    
+    if (slug === 'All') {
+      setSelectedCategory(null);
+    } else {
+      setSelectedCategory(slug);
+    }
+
+    if (route.name !== 'Home') {
+      navigation.navigate('Home');
+    }
+  };
+
+  const handleSearch = () => {
+    if (route.name !== 'Home') {
+      navigation.navigate('Home');
+    }
+  };
+
+  const renderCategoryItem = (cat: any) => {
+    if (!cat) return null;
+    const slug = typeof cat === 'string' ? cat : cat.slug;
+    const name = typeof cat === 'string' ? cat : cat.name;
+    const isSelected = selectedCategory === slug;
+
+    return (
+      <TouchableOpacity
+        key={slug}
+        style={[styles.categoryItem, isSelected && styles.categoryItemSelected]}
+        onPress={() => handleCategorySelect(cat)}
+      >
+        <Text style={[styles.categoryText, isSelected && styles.categoryTextSelected]} numberOfLines={1}>
+          {name} {isSelected && isLargeScreen && '>'}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const SearchBar = (
+    <View style={[styles.searchContainer, isMobile && styles.searchContainerMobile]}>
+      <Text style={styles.searchIcon}>🔍</Text>
+      <TextInput
+        style={styles.searchInput}
+        placeholder={isMobile ? "Search..." : "Search items..."}
+        placeholderTextColor="#94a3b8"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        onSubmitEditing={handleSearch}
+        returnKeyType="search"
+      />
+    </View>
+  );
+
+  const categoryList = Array.isArray(categories) ? categories : [];
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <Header centerComponent={showSearch ? SearchBar : undefined} />
+        
+        <View style={[styles.mainLayout, !isLargeScreen && styles.mainLayoutMobile]}>
+          
+          {/* Categories Sidebar/Top Bar */}
+          {isLargeScreen ? (
+            <View style={styles.sidebar}>
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sidebarContent}>
+                <TouchableOpacity
+                  style={[styles.categoryItem, !selectedCategory && styles.categoryItemSelected]}
+                  onPress={() => handleCategorySelect('All')}
+                >
+                  <Text style={[styles.categoryText, !selectedCategory && styles.categoryTextSelected]}>
+                    All
+                  </Text>
+                </TouchableOpacity>
+                {categoryList.map(renderCategoryItem)}
+              </ScrollView>
+            </View>
+          ) : (
+            <View style={styles.horizontalCategoriesContainer}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalCategories}>
+                <TouchableOpacity
+                  style={[styles.categoryItem, !selectedCategory && styles.categoryItemSelected]}
+                  onPress={() => handleCategorySelect('All')}
+                >
+                  <Text style={[styles.categoryText, !selectedCategory && styles.categoryTextSelected]}>
+                    All
+                  </Text>
+                </TouchableOpacity>
+                {categoryList.map(renderCategoryItem)}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* Content Area */}
+          <View style={styles.contentArea}>
+            {children}
+          </View>
+
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#ffffff' },
+  mainLayout: {
+    flex: 1,
+    flexDirection: 'row',
+    width: '100%',
+    paddingTop: 24,
+  },
+  mainLayoutMobile: {
+    flexDirection: 'column',
+    paddingTop: 0,
+  },
+  sidebar: {
+    width: 250,
+    paddingHorizontal: 24,
+  },
+  sidebarContent: {
+    paddingBottom: 40,
+  },
+  horizontalCategoriesContainer: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+    backgroundColor: '#ffffff',
+  },
+  horizontalCategories: {
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  categoryItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginBottom: 8,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  categoryItemSelected: {
+    backgroundColor: '#f3f0ff',
+  },
+  categoryText: {
+    fontSize: 15,
+    color: '#64748b',
+    fontWeight: '500',
+  },
+  categoryTextSelected: {
+    color: '#6366f1',
+    fontWeight: '700',
+  },
+  contentArea: {
+    flex: 1,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 500,
+    backgroundColor: '#f8fafc',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  searchContainerMobile: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  searchIcon: {
+    fontSize: 14,
+    marginRight: 6,
+    color: '#94a3b8',
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: '#0f172a',
+    borderWidth: 0,
+    padding: 4,
+  },
+});

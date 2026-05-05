@@ -1,54 +1,64 @@
 import React from 'react';
-import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, Text, TouchableOpacity, Pressable } from 'react-native';
+import Logo from '../../assets/favicon.png';
 import { useNavigation } from '@react-navigation/native';
 import { ENV } from '../config/env';
 import { useAuthStore } from '../store/useAuthStore';
 import { RootNavigationProp } from '../navigation/types';
+import useDeviceWidth from '../utils/useDeviceWidth';
 
 type HeaderProps = {
   centerComponent?: React.ReactNode;
 };
 
 export const Header = ({ centerComponent }: HeaderProps) => {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, logout } = useAuthStore();
   const navigation = useNavigation<RootNavigationProp>();
+  const deviceWidth = useDeviceWidth();
+
+  const isMobile = deviceWidth === 'sm';
+  const isSmallMobile = deviceWidth === 'sm';
 
   return (
-    <View style={styles.container}>
-      <View style={styles.left}>
-        {ENV.LOGO_URL ? (
-          <Image
-            source={{ uri: ENV.LOGO_URL }}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-        ) : (
-          <Text style={styles.appName}>{ENV.APP_NAME}</Text>
+    <View style={[styles.container, isMobile && styles.containerMobile]}>
+      <Pressable
+        onPress={() => navigation.navigate('Home')}
+        style={[styles.left, isMobile && styles.leftMobile]}
+      >
+        <Image
+          source={Logo}
+          style={[styles.logo, isMobile && styles.logoMobile]}
+          resizeMode="contain"
+        />
+        {!isSmallMobile && (
+          <Text style={[styles.appName, isMobile && styles.appNameMobile]}>
+            {ENV.APP_NAME}
+          </Text>
         )}
-      </View>
+      </Pressable>
 
       {centerComponent && (
-        <View style={styles.center}>
+        <View style={[styles.center, isMobile && styles.centerMobile]}>
           {centerComponent}
         </View>
       )}
 
-      <View style={styles.right}>
-        {isAuthenticated ? (
-          <View style={styles.userSection}>
-            <Text style={styles.userName}>Account</Text>
-            <TouchableOpacity onPress={logout} style={styles.authButton}>
-              <Text style={styles.authButtonText}>Logout</Text>
+      <View style={[styles.right, isMobile && styles.rightMobile]}>
+        <View style={styles.userSection}>
+          {!isMobile && <Text style={styles.userName}>Account</Text>}
+          {isAuthenticated ? (
+            <TouchableOpacity onPress={logout} style={[styles.authButton, isMobile && styles.authButtonMobile]}>
+              <Text style={styles.authButtonText}>{isMobile ? 'Exit' : 'Logout'}</Text>
             </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.userSection}>
-            <Text style={styles.userName}>Account</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.authButton}>
-              <Text style={styles.authButtonText}>Login</Text>
+          ) : (
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Login')}
+              style={[styles.authButton, isMobile && styles.authButtonMobile]}
+            >
+              <Text style={styles.authButtonText}>{isMobile ? 'Login' : 'Login'}</Text>
             </TouchableOpacity>
-          </View>
-        )}
+          )}
+        </View>
       </View>
     </View>
   );
@@ -72,57 +82,79 @@ const styles = StyleSheet.create({
     borderBottomColor: '#f1f5f9',
     gap: 16,
   },
+  containerMobile: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    gap: 8,
+  },
   left: {
     flex: 1,
-    alignItems: 'flex-start',
-    minWidth: 120,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    minWidth: 100,
+  },
+  leftMobile: {
+    flex: 0,
+    minWidth: 40,
   },
   center: {
     flex: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  centerMobile: {
+    flex: 3,
+  },
   right: {
     flex: 1,
     alignItems: 'flex-end',
-    minWidth: 120,
+    minWidth: 100,
+  },
+  rightMobile: {
+    flex: 0,
+    minWidth: 60,
   },
   logo: {
-    width: 160,
-    height: 44,
+    width: 32,
+    height: 32,
+  },
+  logoMobile: {
+    width: 28,
+    height: 28,
   },
   appName: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '800',
     color: '#0f172a',
     letterSpacing: -0.5,
   },
+  appNameMobile: {
+    fontSize: 18,
+  },
   userSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: 12,
   },
   userName: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '500',
     color: '#64748b',
-    display: 'flex',
   },
   authButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
     backgroundColor: '#6366f1',
     borderRadius: 8,
-    shadowColor: '#6366f1',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+  },
+  authButtonMobile: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
   authButtonText: {
     color: '#ffffff',
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
-    letterSpacing: 0.5,
   },
 });

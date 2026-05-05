@@ -3,11 +3,10 @@ import {
   View, Text, StyleSheet, Image, ScrollView,
   TouchableOpacity, ActivityIndicator
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList, RootNavigationProp } from '../../navigation/types';
 import { apiService, Product } from '../../services/api';
-import { Header } from '../../components/Header';
+import { MainLayout } from '../../components/MainLayout';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 
@@ -30,8 +29,7 @@ export const ProductDetailScreen = () => {
   }, [productId]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <Header />
+    <MainLayout showSearch={false}>
       <ScrollView contentContainerStyle={styles.scrollContainer} bounces={true}>
         {loading ? (
           <ActivityIndicator size="large" color="#6366f1" style={styles.loader} />
@@ -90,12 +88,11 @@ export const ProductDetailScreen = () => {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </MainLayout>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#ffffff' },
   scrollContainer: { flexGrow: 1, paddingBottom: 60, alignItems: 'center' },
   loader: { marginTop: 60 },
   errorContainer: { marginTop: 60, alignItems: 'center' },
@@ -107,7 +104,6 @@ const styles = StyleSheet.create({
   backBtnText: { color: '#fff', fontWeight: '700' },
   content: {
     width: '100%',
-    maxWidth: 1200,
     paddingHorizontal: 24,
     paddingTop: 24,
   },
@@ -124,24 +120,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 40,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   imageGallery: {
     flex: 1,
     minWidth: 300,
+    maxWidth: 500,
     backgroundColor: '#f8fafc',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#e2e8f0',
     overflow: 'hidden',
     padding: 24,
+    aspectRatio: 1,
   },
   mainImage: {
     width: '100%',
-    aspectRatio: 1,
+    height: '100%',
   },
   detailsSection: {
-    flex: 1,
+    flex: 1.5,
     minWidth: 300,
     paddingVertical: 16,
   },
@@ -220,6 +218,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 3,
+    maxWidth: 300,
   },
   addToCartText: {
     color: '#ffffff',

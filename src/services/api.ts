@@ -25,7 +25,9 @@ export type ProductsResponse = {
   limit: number;
 };
 
-const BASE_URL = 'https://dummyjson.com';
+import { ENV } from '../config/env';
+
+const BASE_URL = ENV.API_URL;
 
 export const apiService = {
   getProducts: async (): Promise<Product[]> => {
