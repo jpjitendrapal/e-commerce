@@ -9,11 +9,14 @@ import { apiService, Product } from '../../services/api';
 import useDeviceWidth from '../../utils/useDeviceWidth';
 import { MainLayout } from '../../components/MainLayout';
 import { useCategoryStore } from '../../store/useCategoryStore';
+import { useCartStore } from '../../store/useCartStore';
+import { Ionicons } from '@expo/vector-icons';
 
 export const HomeScreen = () => {
   const deviceWidth = useDeviceWidth();
   const navigation = useNavigation<RootNavigationProp>();
   const { selectedCategory, searchQuery } = useCategoryStore();
+  const { addItem } = useCartStore();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +47,16 @@ export const HomeScreen = () => {
     return () => clearTimeout(timer);
   }, [selectedCategory, searchQuery]);
 
+  const handleAddToCart = (product: Product) => {
+    addItem({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      thumbnail: product.thumbnail,
+      quantity: 1
+    });
+  };
+
   return (
     <MainLayout>
       <View style={styles.gridArea}>
@@ -67,7 +80,18 @@ export const HomeScreen = () => {
                   <Image source={{ uri: product.thumbnail }} style={styles.productImage} resizeMode="cover" />
                   <View style={styles.productInfo}>
                     <Text style={styles.productName} numberOfLines={2}>{product.title}</Text>
-                    <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
+                    <View style={styles.priceContainer}>
+                      <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
+                      <TouchableOpacity
+                        style={styles.addToCartSmall}
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(product);
+                        }}
+                      >
+                        <Ionicons name="cart-outline" size={20} color="#ffffff" />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -130,8 +154,27 @@ const styles = StyleSheet.create({
     height: 44,
   },
   productPrice: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#64748b',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#6366f1',
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  addToCartSmall: {
+    backgroundColor: '#6366f1',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#6366f1',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });

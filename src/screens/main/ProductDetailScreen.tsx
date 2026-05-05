@@ -7,6 +7,7 @@ import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList, RootNavigationProp } from '../../navigation/types';
 import { apiService, Product } from '../../services/api';
 import { MainLayout } from '../../components/MainLayout';
+import { useCartStore } from '../../store/useCartStore';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 
@@ -14,6 +15,7 @@ export const ProductDetailScreen = () => {
   const route = useRoute<ProductDetailRouteProp>();
   const navigation = useNavigation<RootNavigationProp>();
   const { productId } = route.params;
+  const { addItem } = useCartStore();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,6 +29,18 @@ export const ProductDetailScreen = () => {
     };
     fetchProduct();
   }, [productId]);
+
+  const handleAddToCart = () => {
+    if (product) {
+      addItem({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        thumbnail: product.thumbnail,
+        quantity: 1
+      });
+    }
+  };
 
   return (
     <MainLayout showSearch={false}>
@@ -80,7 +94,10 @@ export const ProductDetailScreen = () => {
 
                 <Text style={styles.description}>{product.description}</Text>
 
-                <TouchableOpacity style={styles.addToCartBtn}>
+                <TouchableOpacity 
+                  style={styles.addToCartBtn}
+                  onPress={handleAddToCart}
+                >
                   <Text style={styles.addToCartText}>Add to Cart</Text>
                 </TouchableOpacity>
               </View>
