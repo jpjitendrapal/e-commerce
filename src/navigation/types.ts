@@ -7,6 +7,7 @@ export type RootStackParamList = {
   SignUp: undefined;
   OTPVerification: { mobile: string; name?: string; isSignUp?: boolean };
   ProductDetail: { productId: number };
+  Cart: undefined;
 };
 
 export type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
