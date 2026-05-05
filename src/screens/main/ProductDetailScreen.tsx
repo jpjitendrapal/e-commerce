@@ -4,6 +4,7 @@ import {
   TouchableOpacity, ActivityIndicator
 } from 'react-native';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList, RootNavigationProp } from '../../navigation/types';
 import { apiService, Product } from '../../services/api';
 import { MainLayout } from '../../components/MainLayout';
@@ -15,7 +16,7 @@ export const ProductDetailScreen = () => {
   const route = useRoute<ProductDetailRouteProp>();
   const navigation = useNavigation<RootNavigationProp>();
   const { productId } = route.params;
-  const { addItem } = useCartStore();
+  const { addItem, items } = useCartStore();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,17 +31,19 @@ export const ProductDetailScreen = () => {
     fetchProduct();
   }, [productId]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (quantity: number) => {
     if (product) {
       addItem({
         id: product.id,
         title: product.title,
         price: product.price,
         thumbnail: product.thumbnail,
-        quantity: 1
+        quantity: quantity
       });
     }
   };
+
+  const cartItem = items.find(i => i.id === productId);
 
   return (
     <MainLayout showSearch={false}>
@@ -94,12 +97,30 @@ export const ProductDetailScreen = () => {
 
                 <Text style={styles.description}>{product.description}</Text>
 
-                <TouchableOpacity 
-                  style={styles.addToCartBtn}
-                  onPress={handleAddToCart}
-                >
-                  <Text style={styles.addToCartText}>Add to Cart</Text>
-                </TouchableOpacity>
+                {cartItem ? (
+                  <View style={styles.detailQuantityContainer}>
+                    <TouchableOpacity 
+                      style={styles.detailQtyBtn} 
+                      onPress={() => handleAddToCart(-1)}
+                    >
+                      <Ionicons name="remove" size={24} color="#6366f1" />
+                    </TouchableOpacity>
+                    <Text style={styles.detailQtyText}>{cartItem.quantity}</Text>
+                    <TouchableOpacity 
+                      style={styles.detailQtyBtn} 
+                      onPress={() => handleAddToCart(1)}
+                    >
+                      <Ionicons name="add" size={24} color="#6366f1" />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <TouchableOpacity 
+                    style={styles.addToCartBtn}
+                    onPress={() => handleAddToCart(1)}
+                  >
+                    <Text style={styles.addToCartText}>Add to Cart</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </View>
@@ -242,5 +263,35 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
     letterSpacing: 0.5,
+  },
+  detailQuantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f1f5f9',
+    borderRadius: 16,
+    padding: 8,
+    gap: 24,
+    maxWidth: 300,
+    justifyContent: 'center',
+  },
+  detailQtyBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  detailQtyText: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#0f172a',
+    minWidth: 32,
+    textAlign: 'center',
   },
 });

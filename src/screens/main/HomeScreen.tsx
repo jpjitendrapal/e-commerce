@@ -16,7 +16,7 @@ export const HomeScreen = () => {
   const deviceWidth = useDeviceWidth();
   const navigation = useNavigation<RootNavigationProp>();
   const { selectedCategory, searchQuery } = useCategoryStore();
-  const { addItem } = useCartStore();
+  const { addItem, items } = useCartStore();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,13 +47,13 @@ export const HomeScreen = () => {
     return () => clearTimeout(timer);
   }, [selectedCategory, searchQuery]);
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: Product, quantity: number) => {
     addItem({
       id: product.id,
       title: product.title,
       price: product.price,
       thumbnail: product.thumbnail,
-      quantity: 1
+      quantity: quantity
     });
   };
 
@@ -82,15 +82,33 @@ export const HomeScreen = () => {
                     <Text style={styles.productName} numberOfLines={2}>{product.title}</Text>
                     <View style={styles.priceContainer}>
                       <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
-                      <TouchableOpacity
-                        style={styles.addToCartSmall}
-                        onPress={(e) => {
-                          e.stopPropagation();
-                          handleAddToCart(product);
-                        }}
-                      >
-                        <Ionicons name="cart-outline" size={20} color="#ffffff" />
-                      </TouchableOpacity>
+                      {items.find(i => i.id === product.id) ? (
+                        <View style={styles.quantityContainer}>
+                          <TouchableOpacity 
+                            style={styles.qtyBtn} 
+                            onPress={(e) => { e.stopPropagation(); handleAddToCart(product, -1); }}
+                          >
+                            <Ionicons name="remove" size={16} color="#6366f1" />
+                          </TouchableOpacity>
+                          <Text style={styles.qtyText}>{items.find(i => i.id === product.id)?.quantity}</Text>
+                          <TouchableOpacity 
+                            style={styles.qtyBtn} 
+                            onPress={(e) => { e.stopPropagation(); handleAddToCart(product, 1); }}
+                          >
+                            <Ionicons name="add" size={16} color="#6366f1" />
+                          </TouchableOpacity>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.addToCartSmall}
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            handleAddToCart(product, 1);
+                          }}
+                        >
+                          <Ionicons name="cart-outline" size={20} color="#ffffff" />
+                        </TouchableOpacity>
+                      )}
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -176,5 +194,33 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f1f5f9',
+    borderRadius: 20,
+    padding: 2,
+    gap: 8,
+  },
+  qtyBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  qtyText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0f172a',
+    minWidth: 16,
+    textAlign: 'center',
   },
 });
