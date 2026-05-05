@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "E Commerce",
-    "slug": "e-commerce",
+    "name": "E Shop",
+    "slug": "e-shop",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

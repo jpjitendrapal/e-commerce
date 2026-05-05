@@ -25,7 +25,7 @@ export const HomeScreen = () => {
   const isLargeScreen = deviceWidth === "lg";
   const isMediumScreen = deviceWidth === "md";
 
-  const cardWidth = isVeryLargeScreen ? '23%' : isLargeScreen ? '32%' : isMediumScreen ? '47%' : '100%';
+  const cardWidth = isVeryLargeScreen ? '23%' : isLargeScreen ? '32%' : isMediumScreen ? '47%' : '47%';
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -82,39 +82,42 @@ export const HomeScreen = () => {
                   onPress={() => navigation.navigate('ProductDetail', { productId: product.id })}
                 >
                   <Image source={{ uri: product.thumbnail }} style={styles.productImage} resizeMode="cover" />
-                  <View style={styles.productInfo}>
-                    <Text style={styles.productName} numberOfLines={2}>{product.title}</Text>
-                    <View style={styles.priceContainer}>
-                      <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
-                      {items.find(i => i.id === product.id) ? (
-                        <View style={styles.quantityContainer}>
+                    <View style={styles.productInfo}>
+                      <Text style={styles.productBrand} numberOfLines={1}>{product.brand || product.category}</Text>
+                      <Text style={styles.productTitle} numberOfLines={2}>{product.title}</Text>
+                      
+                      <View style={styles.priceContainer}>
+                        <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
+                      </View>
+
+                      <View style={styles.actionSection}>
+                        {items.find(i => i.id === product.id) ? (
+                          <View style={styles.quantityContainer}>
+                            <TouchableOpacity
+                              style={styles.qtyBtn}
+                              onPress={(e) => { e.stopPropagation(); handleAddToCart(product, -1); }}
+                            >
+                              <Ionicons name="remove" size={18} color="#6366f1" />
+                            </TouchableOpacity>
+                            <Text style={styles.qtyText}>{items.find(i => i.id === product.id)?.quantity}</Text>
+                            <TouchableOpacity
+                              style={styles.qtyBtn}
+                              onPress={(e) => { e.stopPropagation(); handleAddToCart(product, 1); }}
+                            >
+                              <Ionicons name="add" size={18} color="#6366f1" />
+                            </TouchableOpacity>
+                          </View>
+                        ) : (
                           <TouchableOpacity 
-                            style={styles.qtyBtn} 
-                            onPress={(e) => { e.stopPropagation(); handleAddToCart(product, -1); }}
-                          >
-                            <Ionicons name="remove" size={16} color="#6366f1" />
-                          </TouchableOpacity>
-                          <Text style={styles.qtyText}>{items.find(i => i.id === product.id)?.quantity}</Text>
-                          <TouchableOpacity 
-                            style={styles.qtyBtn} 
+                            style={styles.addToCartBtn}
                             onPress={(e) => { e.stopPropagation(); handleAddToCart(product, 1); }}
                           >
-                            <Ionicons name="add" size={16} color="#6366f1" />
+                            <Ionicons name="cart-outline" size={18} color="#fff" />
+                            <Text style={styles.addToCartText}>Add</Text>
                           </TouchableOpacity>
-                        </View>
-                      ) : (
-                        <TouchableOpacity
-                          style={styles.addToCartSmall}
-                          onPress={(e) => {
-                            e.stopPropagation();
-                            handleAddToCart(product, 1);
-                          }}
-                        >
-                          <Ionicons name="cart-outline" size={20} color="#ffffff" />
-                        </TouchableOpacity>
-                      )}
+                        )}
+                      </View>
                     </View>
-                  </View>
                 </TouchableOpacity>
               ))}
             </View>
@@ -181,66 +184,82 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8fafc',
   },
   productInfo: {
-    padding: 16,
+    padding: 12,
+    flex: 1,
   },
-  productName: {
-    fontSize: 16,
+  productBrand: {
+    fontSize: 10,
     fontWeight: '700',
+    color: '#94a3b8',
+    textTransform: 'uppercase',
+    marginBottom: 4,
+    letterSpacing: 0.5,
+  },
+  productTitle: {
+    fontSize: 14,
+    fontWeight: '600',
     color: '#1e293b',
     marginBottom: 8,
-    lineHeight: 22,
-    height: 44,
+    lineHeight: 18,
+    height: 36,
+  },
+  priceContainer: {
+    marginBottom: 12,
   },
   productPrice: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#6366f1',
+    fontWeight: '800',
+    color: '#0f172a',
   },
-  priceContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 4,
+  actionSection: {
+    width: '100%',
   },
-  addToCartSmall: {
+  addToCartBtn: {
     backgroundColor: '#6366f1',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    gap: 6,
     shadowColor: '#6366f1',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowRadius: 8,
     elevation: 3,
+  },
+  addToCartText: {
+    color: '#ffffff',
+    fontWeight: '700',
+    fontSize: 14,
   },
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f1f5f9',
-    borderRadius: 20,
+    justifyContent: 'space-between',
+    backgroundColor: '#f8fafc',
+    borderRadius: 10,
     padding: 2,
-    gap: 8,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   qtyBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
   },
   qtyText: {
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 15,
+    fontWeight: '800',
     color: '#0f172a',
-    minWidth: 16,
     textAlign: 'center',
   },
 });
