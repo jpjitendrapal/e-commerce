@@ -18,7 +18,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.buildweb.go.ecommerce"
     },
     "web": {
       "favicon": "./assets/favicon.png"
