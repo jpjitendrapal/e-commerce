@@ -6,14 +6,27 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useCartStore, CartItem } from '../../store/useCartStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { MainLayout } from '../../components/MainLayout';
 import { RootNavigationProp } from '../../navigation/types';
 
 export const CartScreen = () => {
   const navigation = useNavigation<RootNavigationProp>();
   const { items, addItem, removeItem, clearCart } = useCartStore();
+  const { isAuthenticated } = useAuthStore();
 
   const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
+
+  const handleCheckout = () => {
+    // Check if user is logged in
+    if (isAuthenticated) {
+      // If logged in, proceed to checkout
+      navigation.navigate('Checkout');
+    } else {
+      // If not logged in, redirect to login and pass redirect param
+      navigation.navigate('Login', { redirectTo: 'Checkout' });
+    }
+  };
 
   const renderItem = ({ item }: { item: CartItem }) => (
     <View style={styles.cartItem}>
@@ -44,12 +57,17 @@ export const CartScreen = () => {
   );
 
   return (
-    <MainLayout showSearch={false}>
+    <MainLayout showSearch={false} showCategories={false}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Your Cart ({items.length})</Text>
+          <View style={styles.headerTitleContainer}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+              <Ionicons name="arrow-back" size={24} color="#0f172a" />
+            </TouchableOpacity>
+            <Text style={styles.title}>Your Cart ({items.length})</Text>
+          </View>
           {items.length > 0 && (
-            <TouchableOpacity onPress={clearCart}>
+            <TouchableOpacity onPress={() => clearCart()}>
               <Text style={styles.clearText}>Clear All</Text>
             </TouchableOpacity>
           )}
@@ -89,7 +107,7 @@ export const CartScreen = () => {
                 <Text style={styles.totalValue}>${subtotal.toFixed(2)}</Text>
               </View>
               
-              <TouchableOpacity style={styles.checkoutBtn}>
+              <TouchableOpacity style={styles.checkoutBtn} onPress={handleCheckout}>
                 <Text style={styles.checkoutText}>Proceed to Checkout</Text>
                 <Ionicons name="arrow-forward" size={20} color="#ffffff" style={{ marginLeft: 8 }} />
               </TouchableOpacity>
@@ -105,6 +123,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8fafc',
+    width: '100%',
+    maxWidth: 1000,
+    alignSelf: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -114,9 +135,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '800',
     color: '#0f172a',
+  },
+  headerTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  backBtn: {
+    padding: 4,
   },
   clearText: {
     color: '#ef4444',

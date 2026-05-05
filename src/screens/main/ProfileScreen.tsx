@@ -62,6 +62,7 @@ export const ProfileScreen = () => {
             <TextInput
               style={[styles.input, error ? styles.inputError : null]}
               placeholder="Your Full Name"
+              placeholderTextColor="#94a3b8"
               value={name}
               onChangeText={(text) => {
                 setName(text);

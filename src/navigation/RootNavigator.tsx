@@ -9,6 +9,8 @@ import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { OTPVerificationScreen } from '../screens/auth/OTPVerificationScreen';
 import { CartScreen } from '../screens/main/CartScreen';
 import { ProfileScreen } from '../screens/main/ProfileScreen';
+import { CheckoutScreen } from '../screens/main/CheckoutScreen';
+import { OrdersScreen } from '../screens/main/OrdersScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -23,6 +25,8 @@ const linking: LinkingOptions<RootStackParamList> = {
       ProductDetail: 'product/:productId',
       Cart: 'cart',
       Profile: 'profile',
+      Checkout: 'checkout',
+      Orders: 'orders',
     },
   },
 };
@@ -38,6 +42,8 @@ export const RootNavigator = () => {
         <Stack.Screen name="OTPVerification" component={OTPVerificationScreen} />
         <Stack.Screen name="Cart" component={CartScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Checkout" component={CheckoutScreen} />
+        <Stack.Screen name="Orders" component={OrdersScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

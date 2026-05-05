@@ -1,6 +1,15 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export interface Address {
+  fullName: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  phone: string;
+}
+
 export interface User {
   name?: string;
   mobile: string;
@@ -9,10 +18,13 @@ export interface User {
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
+  savedAddress: Address | null;
   login: (user: User) => void;
   setUser: (user: User | null) => void;
   updateUser: (userData: Partial<User>) => void;
   logout: () => void;
+  setSavedAddress: (address: Address | null) => void;
+  saveAddress: (address: Address) => void;
 }
 
 const AUTH_STORAGE_KEY = 'user-auth-storage';
@@ -32,6 +44,7 @@ const saveToStorage = async (user: User | null) => {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
+  savedAddress: null,
   login: (user) => {
     set({ user, isAuthenticated: true });
     saveToStorage(user);
@@ -45,5 +58,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     set({ user: null, isAuthenticated: false });
     saveToStorage(null);
+  },
+  setSavedAddress: (address) => set({ savedAddress: address }),
+  saveAddress: (address) => {
+    set({ savedAddress: address });
+    AsyncStorage.setItem('user-auth-address', JSON.stringify(address));
   },
 }));

@@ -15,8 +15,9 @@ interface CartState {
   addItem: (item: CartItem) => void;
   removeItem: (id: number) => void;
   setItems: (items: CartItem[]) => void;
-  clearCart: () => void;
+  clearCart: (showToast?: boolean) => void;
   getTotalItems: () => number;
+  getTotalPrice: () => number;
 }
 
 const CART_STORAGE_KEY = 'shopping-cart-storage';
@@ -60,13 +61,18 @@ export const useCartStore = create<CartState>((set, get) => ({
     saveToStorage(newItems);
     return { items: newItems };
   }),
-  clearCart: () => {
+  clearCart: (showToast = true) => {
     const newItems: CartItem[] = [];
     saveToStorage(newItems);
     set({ items: newItems });
-    useToastStore.getState().showToast('Cart cleared', 'info');
+    if (showToast) {
+      useToastStore.getState().showToast('Cart cleared', 'info');
+    }
   },
   getTotalItems: () => {
     return get().items.reduce((total, item) => total + item.quantity, 0);
+  },
+  getTotalPrice: () => {
+    return get().items.reduce((total, item) => total + (item.price * item.quantity), 0);
   },
 }));

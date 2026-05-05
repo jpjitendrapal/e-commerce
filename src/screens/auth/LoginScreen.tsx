@@ -4,7 +4,7 @@ import {
   ActivityIndicator, KeyboardAvoidingView, ScrollView, Platform 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { RootNavigationProp } from '../../navigation/types';
 import { authService } from '../../services/auth';
 import { useToastStore } from '../../store/useToastStore';
@@ -14,7 +14,9 @@ export const LoginScreen = () => {
   const [mobile, setMobile] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const route = useRoute<any>();
   const navigation = useNavigation<RootNavigationProp>();
+  const redirectTo = route.params?.redirectTo;
 
   const { showToast } = useToastStore();
 
@@ -28,7 +30,7 @@ export const LoginScreen = () => {
     try {
       await authService.sendOTP(mobile);
       showToast('OTP sent successfully!', 'success');
-      navigation.navigate('OTPVerification', { mobile, isSignUp: false });
+      navigation.navigate('OTPVerification', { mobile, isSignUp: false, redirectTo });
     } catch (e) {
       showToast('Failed to send OTP. Please try again.', 'error');
     } finally {
@@ -51,7 +53,8 @@ export const LoginScreen = () => {
               style={[styles.input, error ? styles.inputError : null]}
               placeholder="Mobile Number"
               keyboardType="phone-pad"
-              value={mobile}
+              placeholderTextColor="#94a3b8"
+          value={mobile}
               onChangeText={(text) => {
                 setMobile(text);
                 if (error) setError('');

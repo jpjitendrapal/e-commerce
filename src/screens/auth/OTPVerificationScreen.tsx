@@ -15,7 +15,7 @@ type OTPVerificationRouteProp = RouteProp<RootStackParamList, 'OTPVerification'>
 export const OTPVerificationScreen = () => {
   const route = useRoute<OTPVerificationRouteProp>();
   const navigation = useNavigation<RootNavigationProp>();
-  const { mobile, name, isSignUp } = route.params;
+  const { mobile, name, isSignUp, redirectTo } = route.params;
   
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
@@ -36,7 +36,11 @@ export const OTPVerificationScreen = () => {
       if (isValid) {
         showToast('Login successful!', 'success');
         login({ mobile, name: isSignUp ? name : 'User' });
-        navigation.navigate('Home');
+        if (redirectTo) {
+          navigation.navigate(redirectTo as any);
+        } else {
+          navigation.navigate('Home');
+        }
       } else {
         setError('Invalid OTP. Please try again.');
       }

@@ -14,9 +14,14 @@ import { Toast } from './Toast';
 interface MainLayoutProps {
   children: ReactNode;
   showSearch?: boolean;
+  showCategories?: boolean;
 }
 
-export const MainLayout = ({ children, showSearch = true }: MainLayoutProps) => {
+export const MainLayout = ({ 
+  children, 
+  showSearch = true,
+  showCategories = true
+}: MainLayoutProps) => {
   const deviceWidth = useDeviceWidth();
   const navigation = useNavigation<RootNavigationProp>();
   const route = useRoute();
@@ -98,42 +103,49 @@ export const MainLayout = ({ children, showSearch = true }: MainLayoutProps) => 
       >
         <Header centerComponent={showSearch ? SearchBar : undefined} />
         
-        <View style={[styles.mainLayout, !isLargeScreen && styles.mainLayoutMobile]}>
+        <View style={[
+          styles.mainLayout, 
+          !isLargeScreen && styles.mainLayoutMobile,
+          !showCategories && styles.mainLayoutNoCategories
+        ]}>
           
           {/* Categories Sidebar/Top Bar */}
-          {isLargeScreen ? (
-            <View style={styles.sidebar}>
-              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sidebarContent}>
-                <TouchableOpacity
-                  style={[styles.categoryItem, !selectedCategory && styles.categoryItemSelected]}
-                  onPress={() => handleCategorySelect('All')}
-                >
-                  {!selectedCategory && isLargeScreen && <View style={styles.activeBar} />}
-                  <Text style={[styles.categoryText, !selectedCategory && styles.categoryTextSelected]}>
-                    All
-                  </Text>
-                </TouchableOpacity>
-                {categoryList.map(renderCategoryItem)}
-              </ScrollView>
-            </View>
-          ) : (
-            <View style={styles.horizontalCategoriesContainer}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalCategories}>
-                <TouchableOpacity
-                  style={[styles.categoryItem, !selectedCategory && styles.categoryItemSelected]}
-                  onPress={() => handleCategorySelect('All')}
-                >
-                  <Text style={[styles.categoryText, !selectedCategory && styles.categoryTextSelected]}>
-                    All
-                  </Text>
-                </TouchableOpacity>
-                {categoryList.map(renderCategoryItem)}
-              </ScrollView>
-            </View>
+          {showCategories && (
+            isLargeScreen ? (
+              <View style={styles.sidebar}>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.sidebarContent}>
+                  <TouchableOpacity
+                    style={[styles.categoryItem, !selectedCategory && styles.categoryItemSelected]}
+                    onPress={() => handleCategorySelect('All')}
+                  >
+                    {!selectedCategory && isLargeScreen && <View style={styles.activeBar} />}
+                    <Text style={[styles.categoryText, !selectedCategory && styles.categoryTextSelected]}>
+                      All
+                    </Text>
+                  </TouchableOpacity>
+                  {categoryList.map(renderCategoryItem)}
+                </ScrollView>
+              </View>
+            ) : (
+              <View style={styles.horizontalCategoriesContainer}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalCategories}>
+                  <TouchableOpacity
+                    style={[styles.categoryItem, !selectedCategory && styles.categoryItemSelected]}
+                    onPress={() => handleCategorySelect('All')}
+                  >
+                    {!selectedCategory && isLargeScreen && <View style={styles.activeBar} />}
+                    <Text style={[styles.categoryText, !selectedCategory && styles.categoryTextSelected]}>
+                      All
+                    </Text>
+                  </TouchableOpacity>
+                  {categoryList.map(renderCategoryItem)}
+                </ScrollView>
+              </View>
+            )
           )}
 
           {/* Content Area */}
-          <View style={styles.contentArea}>
+          <View style={[styles.contentArea, !showCategories && styles.contentAreaFull]}>
             {children}
           </View>
 
@@ -154,6 +166,9 @@ const styles = StyleSheet.create({
   },
   mainLayoutMobile: {
     flexDirection: 'column',
+    paddingTop: 0,
+  },
+  mainLayoutNoCategories: {
     paddingTop: 0,
   },
   sidebar: {
@@ -207,6 +222,9 @@ const styles = StyleSheet.create({
   },
   contentArea: {
     flex: 1,
+  },
+  contentAreaFull: {
+    paddingTop: 0,
   },
   searchContainer: {
     flexDirection: 'row',

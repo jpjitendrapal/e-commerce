@@ -91,6 +91,17 @@ export const Header = ({ centerComponent }: HeaderProps) => {
                       style={styles.menuItem}
                       onPress={() => {
                         setIsMenuVisible(false);
+                        navigation.navigate('Orders');
+                      }}
+                    >
+                      <Ionicons name="receipt-outline" size={20} color="#475569" />
+                      <Text style={styles.menuText}>My Orders</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity 
+                      style={styles.menuItem}
+                      onPress={() => {
+                        setIsMenuVisible(false);
                         logout();
                       }}
                     >

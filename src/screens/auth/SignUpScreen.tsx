@@ -59,6 +59,7 @@ export const SignUpScreen = () => {
             <TextInput
               style={[styles.input, nameError ? styles.inputError : null]}
               placeholder="Full Name"
+              placeholderTextColor="#94a3b8"
               value={name}
               onChangeText={(text) => {
                 setName(text);
@@ -73,6 +74,7 @@ export const SignUpScreen = () => {
               style={[styles.input, mobileError ? styles.inputError : null]}
               placeholder="Mobile Number"
               keyboardType="phone-pad"
+              placeholderTextColor="#94a3b8"
               value={mobile}
               onChangeText={(text) => {
                 setMobile(text);
