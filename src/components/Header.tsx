@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { ENV } from '../config/env';
 import { useAuthStore } from '../store/useAuthStore';
 import { useCartStore } from '../store/useCartStore';
+import { useOrderStore } from '../store/useOrderStore';
+import { useToastStore } from '../store/useToastStore';
 import { RootNavigationProp } from '../navigation/types';
 import useDeviceWidth from '../utils/useDeviceWidth';
 
@@ -15,7 +17,9 @@ type HeaderProps = {
 
 export const Header = ({ centerComponent }: HeaderProps) => {
   const { isAuthenticated, logout, user } = useAuthStore();
-  const { getTotalItems } = useCartStore();
+  const { getTotalItems, clearCart } = useCartStore();
+  const { clearOrders } = useOrderStore();
+  const { showToast } = useToastStore();
   const navigation = useNavigation<RootNavigationProp>();
   const deviceWidth = useDeviceWidth();
   const cartItemCount = getTotalItems();
@@ -103,6 +107,10 @@ export const Header = ({ centerComponent }: HeaderProps) => {
                       onPress={() => {
                         setIsMenuVisible(false);
                         logout();
+                        clearCart(false);
+                        clearOrders();
+                        showToast('Logged out successfully', 'info');
+                        navigation.navigate('Home');
                       }}
                     >
                       <Ionicons name="log-out-outline" size={20} color="#ef4444" />

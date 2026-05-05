@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { 
-  View, Text, TextInput, TouchableOpacity, StyleSheet, 
-  ActivityIndicator, KeyboardAvoidingView, ScrollView, Platform 
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  ActivityIndicator, KeyboardAvoidingView, ScrollView, Platform
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -40,13 +40,13 @@ export const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView 
-        style={styles.keyboardAvoiding} 
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoiding}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.scrollContainer} bounces={false}>
           <View style={styles.card}>
-            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.title}>Login</Text>
             <Text style={styles.subtitle}>Enter your mobile number to login</Text>
 
             <TextInput
@@ -54,7 +54,7 @@ export const LoginScreen = () => {
               placeholder="Mobile Number"
               keyboardType="phone-pad"
               placeholderTextColor="#94a3b8"
-          value={mobile}
+              value={mobile}
               onChangeText={(text) => {
                 setMobile(text);
                 if (error) setError('');

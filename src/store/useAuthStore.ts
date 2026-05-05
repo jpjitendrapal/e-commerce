@@ -56,8 +56,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     return { user: newUser };
   }),
   logout: () => {
-    set({ user: null, isAuthenticated: false });
+    set({ user: null, isAuthenticated: false, savedAddress: null });
     saveToStorage(null);
+    AsyncStorage.removeItem('user-auth-address');
   },
   setSavedAddress: (address) => set({ savedAddress: address }),
   saveAddress: (address) => {

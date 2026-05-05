@@ -14,6 +14,7 @@ interface OrderState {
   orders: Order[];
   addOrder: (order: Order) => void;
   setOrders: (orders: Order[]) => void;
+  clearOrders: () => void;
 }
 
 const ORDERS_STORAGE_KEY = 'user-orders-storage';
@@ -34,4 +35,8 @@ export const useOrderStore = create<OrderState>((set) => ({
     saveToStorage(newOrders);
     return { orders: newOrders };
   }),
+  clearOrders: () => {
+    set({ orders: [] });
+    AsyncStorage.removeItem(ORDERS_STORAGE_KEY);
+  },
 }));
