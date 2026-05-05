@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   View, Text, StyleSheet, FlatList, Image, 
   TouchableOpacity, ScrollView 
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useOrderStore, Order } from '../../store/useOrderStore';
+import { useOrderStore, Order, getOrderStatus } from '../../store/useOrderStore';
 import { MainLayout } from '../../components/MainLayout';
 import { RootNavigationProp } from '../../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,6 +12,15 @@ import { Ionicons } from '@expo/vector-icons';
 export const OrdersScreen = () => {
   const navigation = useNavigation<RootNavigationProp>();
   const { orders } = useOrderStore();
+  const [, setTick] = useState(0);
+
+  // Re-render every 30 seconds to update statuses
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTick(t => t + 1);
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -24,39 +33,45 @@ export const OrdersScreen = () => {
     });
   };
 
-  const renderOrderCard = ({ item }: { item: Order }) => (
-    <View style={styles.orderCard}>
-      <View style={styles.orderHeader}>
-        <View>
-          <Text style={styles.orderId}>{item.id}</Text>
-          <Text style={styles.orderDate}>{formatDate(item.date)}</Text>
-        </View>
-        <View style={[styles.statusBadge, styles[`status${item.status}`]]}>
-          <Text style={[styles.statusText, styles[`statusText${item.status}`]]}>{item.status}</Text>
-        </View>
-      </View>
-
-      <View style={styles.itemsPreview}>
-        {item.items.slice(0, 3).map((cartItem, index) => (
-          <Image 
-            key={`${item.id}-item-${index}`}
-            source={{ uri: cartItem.thumbnail }} 
-            style={styles.itemThumb} 
-          />
-        ))}
-        {item.items.length > 3 && (
-          <View style={styles.moreItems}>
-            <Text style={styles.moreItemsText}>+{item.items.length - 3}</Text>
+  const renderOrderCard = ({ item }: { item: Order }) => {
+    const currentStatus = getOrderStatus(item.date, item.status);
+    
+    return (
+      <View style={styles.orderCard}>
+        <View style={styles.orderHeader}>
+          <View>
+            <Text style={styles.orderId}>{item.id}</Text>
+            <Text style={styles.orderDate}>{formatDate(item.date)}</Text>
           </View>
-        )}
-      </View>
+          <View style={[styles.statusBadge, styles[`status${currentStatus}`]]}>
+            <Text style={[styles.statusText, styles[`statusText${currentStatus}`]]}>
+              {currentStatus}
+            </Text>
+          </View>
+        </View>
 
-      <View style={styles.orderFooter}>
-        <Text style={styles.totalLabel}>Total Amount</Text>
-        <Text style={styles.totalValue}>${item.total.toFixed(2)}</Text>
+        <View style={styles.itemsPreview}>
+          {item.items.slice(0, 3).map((cartItem, index) => (
+            <Image 
+              key={`${item.id}-item-${index}`}
+              source={{ uri: cartItem.thumbnail }} 
+              style={styles.itemThumb} 
+            />
+          ))}
+          {item.items.length > 3 && (
+            <View style={styles.moreItems}>
+              <Text style={styles.moreItemsText}>+{item.items.length - 3}</Text>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.orderFooter}>
+          <Text style={styles.totalLabel}>Total Amount</Text>
+          <Text style={styles.totalValue}>${item.total.toFixed(2)}</Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <MainLayout showSearch={false}>
@@ -139,8 +154,8 @@ const styles = StyleSheet.create({
   statusTextProcessing: { color: '#d97706' },
   statusShipped: { backgroundColor: '#e0f2fe' },
   statusTextShipped: { color: '#0284c7' },
-  statusDelivered: { backgroundColor: '#dcfce7' },
-  statusTextDelivered: { color: '#16a34a' },
+  statusCompleted: { backgroundColor: '#dcfce7' },
+  statusTextCompleted: { color: '#16a34a' },
   statusCancelled: { backgroundColor: '#fee2e2' },
   statusTextCancelled: { color: '#dc2626' },
   itemsPreview: { flexDirection: 'row', gap: 12, marginBottom: 16 },

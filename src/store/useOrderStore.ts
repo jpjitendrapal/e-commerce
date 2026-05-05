@@ -7,8 +7,17 @@ export interface Order {
   date: string;
   items: CartItem[];
   total: number;
-  status: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+  status: 'Processing' | 'Shipped' | 'Completed' | 'Cancelled';
 }
+
+export const getOrderStatus = (orderDate: string, currentStatus: Order['status']): Order['status'] => {
+  if (currentStatus === 'Cancelled') return 'Cancelled';
+
+  const diffInMinutes = (new Date().getTime() - new Date(orderDate).getTime()) / 60000;
+  if (diffInMinutes >= 30) return 'Completed';
+  if (diffInMinutes >= 5) return 'Shipped';
+  return 'Processing';
+};
 
 interface OrderState {
   orders: Order[];
