@@ -9,6 +9,7 @@ import { Header } from './Header';
 import { useCategoryStore } from '../store/useCategoryStore';
 import useDeviceWidth from '../utils/useDeviceWidth';
 import { RootNavigationProp } from '../navigation/types';
+import { Toast } from './Toast';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -135,6 +136,7 @@ export const MainLayout = ({ children, showSearch = true }: MainLayoutProps) => 
           </View>
 
         </View>
+        <Toast />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
