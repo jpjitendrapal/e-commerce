@@ -9,6 +9,7 @@ import { RootStackParamList, RootNavigationProp } from '../../navigation/types';
 import { apiService, Product } from '../../services/api';
 import { MainLayout } from '../../components/MainLayout';
 import { useCartStore } from '../../store/useCartStore';
+import { useToastStore } from '../../store/useToastStore';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 
@@ -17,9 +18,13 @@ export const ProductDetailScreen = () => {
   const navigation = useNavigation<RootNavigationProp>();
   const { productId } = route.params;
   const { addItem, items } = useCartStore();
+  const { showToast } = useToastStore();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const cartItem = items.find(item => item.id === product?.id);
+  const quantityInCart = cartItem?.quantity || 0;
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -31,19 +36,18 @@ export const ProductDetailScreen = () => {
     fetchProduct();
   }, [productId]);
 
-  const handleAddToCart = (quantity: number) => {
+  const handleAddToCart = () => {
     if (product) {
       addItem({
         id: product.id,
         title: product.title,
         price: product.price,
         thumbnail: product.thumbnail,
-        quantity: quantity
+        quantity: 1
       });
+      showToast('Added to cart!');
     }
   };
-
-  const cartItem = items.find(i => i.id === productId);
 
   return (
     <MainLayout showSearch={false}>
@@ -97,30 +101,27 @@ export const ProductDetailScreen = () => {
 
                 <Text style={styles.description}>{product.description}</Text>
 
-                {cartItem ? (
-                  <View style={styles.detailQuantityContainer}>
-                    <TouchableOpacity 
-                      style={styles.detailQtyBtn} 
-                      onPress={() => handleAddToCart(-1)}
-                    >
-                      <Ionicons name="remove" size={24} color="#6366f1" />
-                    </TouchableOpacity>
-                    <Text style={styles.detailQtyText}>{cartItem.quantity}</Text>
-                    <TouchableOpacity 
-                      style={styles.detailQtyBtn} 
-                      onPress={() => handleAddToCart(1)}
-                    >
-                      <Ionicons name="add" size={24} color="#6366f1" />
-                    </TouchableOpacity>
-                  </View>
-                ) : (
+                <View style={styles.actions}>
                   <TouchableOpacity 
-                    style={styles.addToCartBtn}
-                    onPress={() => handleAddToCart(1)}
+                    style={styles.addToCartBtn} 
+                    onPress={handleAddToCart}
                   >
-                    <Text style={styles.addToCartText}>Add to Cart</Text>
+                    <Ionicons name="cart-outline" size={20} color="#fff" />
+                    <Text style={styles.addToCartText}>
+                      {quantityInCart > 0 ? `Add More (${quantityInCart})` : 'Add to Cart'}
+                    </Text>
                   </TouchableOpacity>
-                )}
+
+                  {quantityInCart > 0 && (
+                    <TouchableOpacity 
+                      style={styles.goToCartBtn} 
+                      onPress={() => navigation.navigate('Cart')}
+                    >
+                      <Ionicons name="arrow-forward-outline" size={20} color="#6366f1" />
+                      <Text style={styles.goToCartText}>Go to Cart</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
             </View>
           </View>
@@ -246,23 +247,52 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     marginBottom: 40,
   },
+  actions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 24,
+    width: '100%',
+  },
   addToCartBtn: {
+    flex: 1,
+    minWidth: 160,
     backgroundColor: '#6366f1',
-    paddingVertical: 16,
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRadius: 14,
+    gap: 8,
     shadowColor: '#6366f1',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 3,
-    maxWidth: 300,
   },
   addToCartText: {
     color: '#ffffff',
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: 15,
     letterSpacing: 0.5,
+  },
+  goToCartBtn: {
+    flex: 1,
+    minWidth: 160,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRadius: 14,
+    gap: 8,
+    borderWidth: 2,
+    borderColor: '#6366f1',
+  },
+  goToCartText: {
+    color: '#6366f1',
+    fontSize: 15,
+    fontWeight: '700',
   },
   detailQuantityContainer: {
     flexDirection: 'row',

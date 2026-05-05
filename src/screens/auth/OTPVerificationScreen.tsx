@@ -74,7 +74,7 @@ export const OTPVerificationScreen = () => {
           navigation.navigate('Home');
         }
       } else {
-        setError('Invalid OTP. Use 1234 for testing.');
+        setError('Invalid OTP. Use 1234');
       }
     } catch (e) {
       showToast('Verification failed. Please try again.', 'error');
