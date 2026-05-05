@@ -60,9 +60,13 @@ export const HomeScreen = () => {
   return (
     <MainLayout>
       <View style={styles.gridArea}>
-        <Text style={styles.gridTitle}>
-          {selectedCategory ? selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1) : 'All Products'} ({products?.length})
-        </Text>
+        <View style={styles.titleSection}>
+          <Text style={styles.gridTitle}>
+            {selectedCategory ? selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1) : 'All Products'}
+            <Text style={styles.gridCount}> ({products?.length || 0})</Text>
+          </Text>
+          <View style={styles.accentLine} />
+        </View>
 
         <ScrollView contentContainerStyle={styles.scrollContainer} bounces={true}>
           {loading ? (
@@ -125,12 +129,28 @@ const styles = StyleSheet.create({
   gridArea: {
     flex: 1,
   },
-  gridTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#1e293b',
+  titleSection: {
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginTop: 20,
+    marginBottom: 24,
+  },
+  gridTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#0f172a',
+    letterSpacing: -0.5,
+  },
+  gridCount: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#94a3b8',
+  },
+  accentLine: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#6366f1',
+    borderRadius: 2,
+    marginTop: 8,
   },
   scrollContainer: { flexGrow: 1, alignItems: 'center', paddingBottom: 60 },
   noResults: {

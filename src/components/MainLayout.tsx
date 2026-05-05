@@ -65,8 +65,9 @@ export const MainLayout = ({ children, showSearch = true }: MainLayoutProps) => 
         style={[styles.categoryItem, isSelected && styles.categoryItemSelected]}
         onPress={() => handleCategorySelect(cat)}
       >
+        {isSelected && isLargeScreen && <View style={styles.activeBar} />}
         <Text style={[styles.categoryText, isSelected && styles.categoryTextSelected]} numberOfLines={1}>
-          {name} {isSelected && isLargeScreen && '>'}
+          {name}
         </Text>
       </TouchableOpacity>
     );
@@ -107,6 +108,7 @@ export const MainLayout = ({ children, showSearch = true }: MainLayoutProps) => 
                   style={[styles.categoryItem, !selectedCategory && styles.categoryItemSelected]}
                   onPress={() => handleCategorySelect('All')}
                 >
+                  {!selectedCategory && isLargeScreen && <View style={styles.activeBar} />}
                   <Text style={[styles.categoryText, !selectedCategory && styles.categoryTextSelected]}>
                     All
                   </Text>
@@ -178,11 +180,21 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: 'transparent',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    position: 'relative',
   },
   categoryItemSelected: {
     backgroundColor: '#f3f0ff',
+  },
+  activeBar: {
+    position: 'absolute',
+    left: 0,
+    top: '25%',
+    bottom: '25%',
+    width: 4,
+    backgroundColor: '#6366f1',
+    borderTopRightRadius: 4,
+    borderBottomRightRadius: 4,
   },
   categoryText: {
     fontSize: 15,
