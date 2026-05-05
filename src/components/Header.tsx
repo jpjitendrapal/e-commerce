@@ -2,8 +2,10 @@ import React from 'react';
 import { View, Image, StyleSheet, Text, TouchableOpacity, Pressable } from 'react-native';
 import Logo from '../../assets/favicon.png';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { ENV } from '../config/env';
 import { useAuthStore } from '../store/useAuthStore';
+import { useCartStore } from '../store/useCartStore';
 import { RootNavigationProp } from '../navigation/types';
 import useDeviceWidth from '../utils/useDeviceWidth';
 
@@ -13,8 +15,10 @@ type HeaderProps = {
 
 export const Header = ({ centerComponent }: HeaderProps) => {
   const { isAuthenticated, logout } = useAuthStore();
+  const { getTotalItems } = useCartStore();
   const navigation = useNavigation<RootNavigationProp>();
   const deviceWidth = useDeviceWidth();
+  const cartItemCount = getTotalItems();
 
   const isMobile = deviceWidth === 'sm';
   const isSmallMobile = deviceWidth === 'sm';
@@ -45,19 +49,27 @@ export const Header = ({ centerComponent }: HeaderProps) => {
 
       <View style={[styles.right, isMobile && styles.rightMobile]}>
         <View style={styles.userSection}>
-          {!isMobile && <Text style={styles.userName}>Account</Text>}
-          {isAuthenticated ? (
-            <TouchableOpacity onPress={logout} style={[styles.authButton, isMobile && styles.authButtonMobile]}>
-              <Text style={styles.authButtonText}>{isMobile ? 'Exit' : 'Logout'}</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Login')}
-              style={[styles.authButton, isMobile && styles.authButtonMobile]}
-            >
-              <Text style={styles.authButtonText}>{isMobile ? 'Login' : 'Login'}</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity 
+            onPress={() => isAuthenticated ? logout() : navigation.navigate('Login')} 
+            style={styles.iconButton}
+          >
+            <Ionicons name="person-outline" size={22} color="#0f172a" />
+            {!isMobile && <Text style={styles.userName}>{isAuthenticated ? 'Logout' : 'Account'}</Text>}
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('Cart')} 
+            style={styles.iconButton}
+          >
+            <View>
+              <Ionicons name="cart-outline" size={24} color="#0f172a" />
+              {cartItemCount > 0 && (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{cartItemCount}</Text>
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -113,7 +125,7 @@ const styles = StyleSheet.create({
   },
   rightMobile: {
     flex: 0,
-    minWidth: 60,
+    minWidth: 80,
   },
   logo: {
     width: 32,
@@ -135,26 +147,35 @@ const styles = StyleSheet.create({
   userSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 16,
+  },
+  iconButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   userName: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#64748b',
+    fontWeight: '600',
+    color: '#0f172a',
   },
-  authButton: {
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-    backgroundColor: '#6366f1',
-    borderRadius: 8,
+  badge: {
+    position: 'absolute',
+    top: -5,
+    right: -8,
+    backgroundColor: '#ef4444',
+    borderRadius: 10,
+    minWidth: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+    borderWidth: 1.5,
+    borderColor: '#ffffff',
   },
-  authButtonMobile: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  authButtonText: {
+  badgeText: {
     color: '#ffffff',
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 9,
+    fontWeight: '800',
   },
 });
