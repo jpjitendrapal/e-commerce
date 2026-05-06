@@ -9,6 +9,7 @@ import { useCartStore, CartItem } from '../../store/useCartStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { MainLayout } from '../../components/MainLayout';
 import { RootNavigationProp } from '../../navigation/types';
+import { ENV } from '../../config/env';
 
 export const CartScreen = () => {
   const navigation = useNavigation<RootNavigationProp>();
@@ -33,7 +34,7 @@ export const CartScreen = () => {
       <Image source={{ uri: item.thumbnail }} style={styles.itemImage} />
       <View style={styles.itemDetails}>
         <Text style={styles.itemTitle} numberOfLines={1}>{item.title}</Text>
-        <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+        <Text style={styles.itemPrice}>{ENV.CURRENCY_SYMBOL}{item.price.toFixed(2)}</Text>
         <View style={styles.quantityContainer}>
           <TouchableOpacity 
             onPress={() => item.quantity > 1 ? addItem({ ...item, quantity: -1 }) : removeItem(item.id)}
@@ -96,7 +97,7 @@ export const CartScreen = () => {
             <View style={styles.footer}>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Subtotal</Text>
-                <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+                <Text style={styles.summaryValue}>{ENV.CURRENCY_SYMBOL}{subtotal.toFixed(2)}</Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Shipping</Text>
@@ -104,7 +105,7 @@ export const CartScreen = () => {
               </View>
               <View style={[styles.summaryRow, styles.totalRow]}>
                 <Text style={styles.totalLabel}>Total</Text>
-                <Text style={styles.totalValue}>${subtotal.toFixed(2)}</Text>
+                <Text style={styles.totalValue}>{ENV.CURRENCY_SYMBOL}{subtotal.toFixed(2)}</Text>
               </View>
               
               <TouchableOpacity style={styles.checkoutBtn} onPress={handleCheckout}>

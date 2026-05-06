@@ -101,7 +101,14 @@ export const ProfileScreen = () => {
 
 const styles = StyleSheet.create({
   keyboardAvoiding: { flex: 1 },
-  scrollContainer: { flexGrow: 1, padding: 24, backgroundColor: '#f8fafc' },
+  scrollContainer: { 
+    flexGrow: 1, 
+    padding: 24, 
+    backgroundColor: '#f8fafc',
+    width: '100%',
+    maxWidth: 1000,
+    alignSelf: 'center',
+  },
   card: {
     backgroundColor: '#ffffff',
     padding: 32,

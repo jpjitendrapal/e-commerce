@@ -4,7 +4,7 @@ import {
   ActivityIndicator, KeyboardAvoidingView, ScrollView, Platform 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { RootNavigationProp } from '../../navigation/types';
 import { authService } from '../../services/auth';
 import { useToastStore } from '../../store/useToastStore';
@@ -16,7 +16,9 @@ export const SignUpScreen = () => {
   const [mobile, setMobile] = useState('');
   const [mobileError, setMobileError] = useState('');
   const [loading, setLoading] = useState(false);
+  const route = useRoute<any>();
   const navigation = useNavigation<RootNavigationProp>();
+  const redirectTo = route.params?.redirectTo;
 
   const { showToast } = useToastStore();
 
@@ -37,7 +39,7 @@ export const SignUpScreen = () => {
     try {
       await authService.sendOTP(mobile);
       showToast('OTP sent successfully!', 'success');
-      navigation.navigate('OTPVerification', { mobile, name, isSignUp: true });
+      navigation.navigate('OTPVerification', { mobile, name, isSignUp: true, redirectTo });
     } catch (e) {
       showToast('Failed to send OTP. Please try again.', 'error');
     } finally {

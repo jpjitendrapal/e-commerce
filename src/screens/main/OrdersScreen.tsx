@@ -8,6 +8,7 @@ import { useOrderStore, Order, getOrderStatus } from '../../store/useOrderStore'
 import { MainLayout } from '../../components/MainLayout';
 import { RootNavigationProp } from '../../navigation/types';
 import { Ionicons } from '@expo/vector-icons';
+import { ENV } from '../../config/env';
 
 export const OrdersScreen = () => {
   const navigation = useNavigation<RootNavigationProp>();
@@ -67,7 +68,7 @@ export const OrdersScreen = () => {
 
         <View style={styles.orderFooter}>
           <Text style={styles.totalLabel}>Total Amount</Text>
-          <Text style={styles.totalValue}>${item.total.toFixed(2)}</Text>
+          <Text style={styles.totalValue}>{ENV.CURRENCY_SYMBOL}{item.total.toFixed(2)}</Text>
         </View>
       </View>
     );
@@ -112,7 +113,13 @@ export const OrdersScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#f8fafc',
+    width: '100%',
+    maxWidth: 1000,
+    alignSelf: 'center',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

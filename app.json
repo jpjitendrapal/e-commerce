@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "E Shop",
-    "slug": "e-shop",
-    "version": "1.0.0",
+    "slug": "e-commerce",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
