@@ -10,6 +10,7 @@ import { apiService, Product } from '../../services/api';
 import { MainLayout } from '../../components/MainLayout';
 import { useCartStore } from '../../store/useCartStore';
 import { useToastStore } from '../../store/useToastStore';
+import { ENV } from '../../config/env';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 
@@ -84,7 +85,7 @@ export const ProductDetailScreen = () => {
                 <Text style={styles.title}>{product.title}</Text>
 
                 <View style={styles.priceRow}>
-                  <Text style={styles.price}>${product.price.toFixed(2)}</Text>
+                  <Text style={styles.price}>{ENV.CURRENCY_SYMBOL}{product.price.toFixed(2)}</Text>
                   {product.discountPercentage > 0 && (
                     <View style={styles.discountBadge}>
                       <Text style={styles.discountText}>{product.discountPercentage}% OFF</Text>

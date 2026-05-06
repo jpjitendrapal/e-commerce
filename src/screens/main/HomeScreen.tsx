@@ -11,6 +11,7 @@ import { MainLayout } from '../../components/MainLayout';
 import { useCategoryStore } from '../../store/useCategoryStore';
 import { useCartStore } from '../../store/useCartStore';
 import { Ionicons } from '@expo/vector-icons';
+import { ENV } from '../../config/env';
 
 export const HomeScreen = () => {
   const deviceWidth = useDeviceWidth();
@@ -87,7 +88,7 @@ export const HomeScreen = () => {
                       <Text style={styles.productTitle} numberOfLines={2}>{product.title}</Text>
                       
                       <View style={styles.priceContainer}>
-                        <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
+                        <Text style={styles.productPrice}>{ENV.CURRENCY_SYMBOL}{product.price.toFixed(2)}</Text>
                       </View>
 
                       <View style={styles.actionSection}>

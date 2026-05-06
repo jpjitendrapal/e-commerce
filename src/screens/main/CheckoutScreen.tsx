@@ -11,6 +11,7 @@ import { useOrderStore } from '../../store/useOrderStore';
 import { useToastStore } from '../../store/useToastStore';
 import { MainLayout } from '../../components/MainLayout';
 import { RootNavigationProp } from '../../navigation/types';
+import { ENV } from '../../config/env';
 import { Ionicons } from '@expo/vector-icons';
 
 export const CheckoutScreen = () => {
@@ -194,7 +195,7 @@ export const CheckoutScreen = () => {
             </View>
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Subtotal</Text>
-              <Text style={styles.summaryValue}>${getTotalPrice().toFixed(2)}</Text>
+              <Text style={styles.summaryValue}>{ENV.CURRENCY_SYMBOL}{getTotalPrice().toFixed(2)}</Text>
             </View>
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Shipping</Text>
@@ -203,7 +204,7 @@ export const CheckoutScreen = () => {
             <View style={styles.divider} />
             <View style={styles.summaryRow}>
               <Text style={styles.totalLabel}>Total Amount</Text>
-              <Text style={styles.totalValue}>${getTotalPrice().toFixed(2)}</Text>
+              <Text style={styles.totalValue}>{ENV.CURRENCY_SYMBOL}{getTotalPrice().toFixed(2)}</Text>
             </View>
 
             <TouchableOpacity 
