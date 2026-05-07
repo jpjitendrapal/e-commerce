@@ -11,6 +11,7 @@ import { CartScreen } from '../screens/main/CartScreen';
 import { ProfileScreen } from '../screens/main/ProfileScreen';
 import { CheckoutScreen } from '../screens/main/CheckoutScreen';
 import { OrdersScreen } from '../screens/main/OrdersScreen';
+import { GQLProductsScreen } from '../screens/main/GQLProductsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -27,6 +28,7 @@ const linking: LinkingOptions<RootStackParamList> = {
       Profile: 'profile',
       Checkout: 'checkout',
       Orders: 'orders',
+      GQLProducts: 'gql-products',
     },
   },
 };
@@ -44,6 +46,7 @@ export const RootNavigator = () => {
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Checkout" component={CheckoutScreen} />
         <Stack.Screen name="Orders" component={OrdersScreen} />
+        <Stack.Screen name="GQLProducts" component={GQLProductsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

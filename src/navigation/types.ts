@@ -11,6 +11,7 @@ export type RootStackParamList = {
   Profile: undefined;
   Checkout: undefined;
   Orders: undefined;
+  GQLProducts: undefined;
 };
 
 export type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;

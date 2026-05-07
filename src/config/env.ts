@@ -4,4 +4,5 @@ export const ENV = {
   CLIENT_ID: process.env.EXPO_PUBLIC_CLIENT_ID || 'default-client',
   LOGO_URL: process.env.EXPO_PUBLIC_LOGO_URL || 'https://placehold.co/400x100/png?text=E-Commerce',
   CURRENCY_SYMBOL: process.env.EXPO_PUBLIC_CURRENCY_SYMBOL || '$',
+  GQL_URL: process.env.EXPO_PUBLIC_GQL_URL || 'http://localhost:3000/graphql',
 };

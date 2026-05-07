@@ -123,6 +123,14 @@ export const Header = ({ centerComponent }: HeaderProps) => {
           )}
 
           <TouchableOpacity 
+            onPress={() => navigation.navigate('GQLProducts')} 
+            style={styles.iconButton}
+          >
+            <Ionicons name="server-outline" size={22} color="#0f172a" />
+            {!isMobile && <Text style={styles.userName}>MySQL</Text>}
+          </TouchableOpacity>
+
+          <TouchableOpacity 
             onPress={() => navigation.navigate('Cart')} 
             style={styles.iconButton}
           >

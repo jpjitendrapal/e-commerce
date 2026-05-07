@@ -7,6 +7,9 @@ import { useCartStore } from './src/store/useCartStore';
 import { useAuthStore } from './src/store/useAuthStore';
 import { useOrderStore } from './src/store/useOrderStore';
 
+import { ApolloProvider } from '@apollo/client/react';
+import client from './src/config/apollo';
+
 export default function App() {
   const { setItems } = useCartStore();
   const { setUser } = useAuthStore();
@@ -48,7 +51,9 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <RootNavigator />
+      <ApolloProvider client={client}>
+        <RootNavigator />
+      </ApolloProvider>
       <StatusBar style="auto" />
     </SafeAreaProvider>
   );
